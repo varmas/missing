@@ -1,0 +1,54 @@
+{
+  "name": "missing",
+  "version": "0.0.1",
+  "description": "a web application to track missing people",
+  "main": "index.js",
+  "scripts": {
+    "build": "webpack --optimize-minimize --progress",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "npm run -s watch",
+    "watch": "webpack-dev-server"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/varmas/missing.git"
+  },
+  "keywords": [
+    "missing"
+  ],
+  "author": "varmas",
+  "license": "GPL-3.0",
+  "dependencies": {
+    "body-parser": "^1.14.1",
+    "css-loader": "^0.23.1",
+    "immutable": "^3.8.1",
+    "jquery": "~3.1.1",
+    "lodash": "~4.16.6",
+    "moment": "~2.15.2",
+    "react": "^15.4.1",
+    "react-dom": "^15.4.1",
+    "react-mapbox-gl": "^0.18.0",
+    "rome": "~2.1.22",
+    "semantic-ui-react": "^0.62.1",
+    "style-loader": "^0.13.1",
+    "xml2js": "^0.4.17"
+  },
+  "devDependencies": {
+    "babel": "~6.5.2",
+    "babel-cli": "~6.18.0",
+    "babel-core": "~6.18.2",
+    "babel-loader": "~6.2.7",
+    "babel-preset-es2015": "~6.18.0",
+    "babel-preset-react": "~6.16.0",
+    "babel-preset-stage-0": "^6.16.0",
+    "babel-runtime": "~6.18.0",
+    "css-loader": "~0.23.1",
+    "parallelshell": "^2.0.0",
+    "webpack": "~1.13.3",
+    "webpack-dev-server": "~1.16.2"
+  },
+  "bugs": {
+    "url": "https://github.com/varmas/missing/issues"
+  },
+  "homepage": "https://github.com/varmas/missing#readme"
+}
