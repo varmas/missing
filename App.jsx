@@ -1,224 +1,257 @@
-import React, { Component } from "react";
-import ReactMapboxGl, { Layer, Feature, Popup, ZoomControl } from "react-mapbox-gl";
-import { Icon, Menu } from 'semantic-ui-react';
-import { parseString } from "xml2js";
-import { Map } from "immutable";
+import React, { Component } from 'react';
+import ReactMapboxGl, { Layer, ZoomControl, GeoJSONLayer } from 'react-mapbox-gl';
+import { Icon, Menu, Button, Modal, Header, Rail, Label } from 'semantic-ui-react';
 
+/* eslint-disable max-len */
 const config = {
-  "accessToken": "pk.eyJ1IjoiZmFicmljOCIsImEiOiJjaWc5aTV1ZzUwMDJwdzJrb2w0dXRmc2d0In0.p6GGlfyV-WksaDV_KdN27A",
-  "style": "mapbox://styles/mapbox/dark-v9"
-}
+  accessToken: 'pk.eyJ1Ijoic3Jpa29uZHVydSIsImEiOiJjaXc1ODYwdmcwMHNiMnpzNWkzeHlzYXRuIn0.bXzvkf7SGj9zzaCXLNAhWQ',
+  style: 'mapbox://styles/mapbox/dark-v9',
+};
+/* eslint-enable max-len */
 
 const { accessToken, style } = config;
 
 const containerStyle = {
-  height: "100vh",
-  width: "100vw"
+  height: '100vh',
+  width: '100vw',
 };
 
 const styles = {
   menu: {
-    position: "absolute",
-    top: "0px",
-    marginLeft: "10px",
-    marginTop: "10px"
-  }
-}
+    position: 'absolute',
+    top: '0px',
+    marginLeft: '10px',
+    marginTop: '10px',
+  },
+  info: {
+    height: 'auto',
+    width: 'auto',
+    marginTop: '10px',
+    marginRight: '10px',
+    padding: '0px',
+  },
+};
 
-const circleCoords = {
-  chicago: [-87.623177, 41.881832],
-  peoria: [-89.591834, 40.699880],
-  aurora: [-88.318908, 41.762860],
-  urbana: [-88.203826, 40.111106]
-}
+const colors = {
+  high_risk: '#cc0000',
+  medium_risk: '#990000',
+  low_risk: '#660000',
+};
 
-const cityCount = {
-  chicago: 28,
-  peoria: 4,
-  aurora: 3,
-  urbana: 1
-}
-
-const cityColor = {
-  chicago: 'maroon',
-  peoria: 'darkred',
-  aurora: 'darkred',
-  urbana: 'firebrick'
-}
-
-const maxBounds = [
-      [-124.848974, 24.396308], // South West
-      [-66.885444, 49.384358], // North East
-];
+const countries = {
+  usa: {
+    center: [-101.147518, 39.879491],
+  },
+};
 
 export default class App extends Component {
 
-  state = {
-    activeItem: 'children',
-    center: [-101.147518, 39.879491],
-    zoom: [1]
-  };
-
-  _onDrag = () => {
-    if (this.state.station) {
-      this.setState({
-        station: null
-      });
-    }
-  };
-
-  _polygonClicked = ({ feature }) => {
-    console.log("Polygon clicked", feature.geometry.coordinates);
-  };
-
-  _setMove = (end) => {
-    if(end !== this.state.end)
-      this.setState({ end });
-  };
-
-  _onToggleHover(cursor, { map }) {
-    map.getCanvas().style.cursor = cursor;
+  constructor(props) {
+    super(props);
+    this.handleItemClick = this.handleItemClick.bind(this);
+    this._infoToggle = this._infoToggle.bind(this);
+    this._noFeatureToggle = this._noFeatureToggle.bind(this);
+    this._onControlClick = this._onControlClick.bind(this);
+    this.state = {
+      activeItem: 'children',
+      center: countries.usa.center,
+      zoom: [1],
+      noFeature: false,
+      info: false,
+    };
   }
 
-  _onControlClick = (map, zoomDiff) => {
+  _onControlClick(map, zoomDiff) {
     const zoom = map.getZoom() + zoomDiff;
     this.setState({ zoom: [zoom] });
-  };
+  }
 
-  handleItemClick = (e, { name }) => this.setState({ activeItem: name })
+  _noFeatureToggle() {
+    this.setState({
+      noFeature: !this.state.noFeature,
+    });
+  }
+
+  _infoToggle() {
+    this.setState({
+      info: !this.state.info,
+    });
+  }
+
+  handleItemClick(e, { name }) {
+    this.setState({ activeItem: name });
+  }
 
   render() {
-    const { activeItem} = this.state;
-
     return (
       <div>
+        <Modal
+          key="noFeature"
+          open={this.state.noFeature}
+          onClose={this._noFeatureToggle}
+          basic
+          size="small"
+        >
+          <Header icon="browser" content="Unimplemented feature (absent data)" />
+          <Modal.Content>
+            <h3>This feature has not been implemented yet :[</h3>
+            <h3>Instead of feeling angry you can help me out at <a href="https://github.com/varmas/missing/issues/6">https://github.com/varmas/missing/issues/6</a></h3>
+          </Modal.Content>
+          <Modal.Actions>
+            <Button color="green"
+              onClick={this._noFeatureToggle}
+              inverted
+            >
+              <Icon name="checkmark" /> Got it
+            </Button>
+          </Modal.Actions>
+        </Modal>
+        <Modal
+          key="info"
+          open={this.state.info}
+          onClose={this._infoToggle}
+          basic
+          size="small"
+        >
+          <Header icon="browser" content="Missing info" />
+          <Modal.Content>
+            {/* eslint-disable max-len */}
+            <h3>This site is designed to visualize missing people, both children and adults which can lead to better ways to analyze related patterns and factors</h3>
+            <h3>Instead of feeling sad you can get more information and help me out at <a href="https://github.com/varmas/missing/">https://github.com/varmas/missing/</a></h3>
+            {/* eslint-enable max-len */}
+          </Modal.Content>
+          <Modal.Actions>
+            <Button color="green"
+              onClick={this._infoToggle}
+              inverted
+            >
+              <Icon name="checkmark" /> Got it
+            </Button>
+          </Modal.Actions>
+        </Modal>
         <ReactMapboxGl
           style={style}
           center={this.state.center}
           zoom={this.state.zoom}
-          minZoom={1}
-          maxZoom={15}
-          maxBounds={maxBounds}
+          minZoom={2}
+          maxZoom={10}
           accessToken={accessToken}
-          onDrag={this._onDrag}
-          onMoveEnd={this._setMove.bind(this, true)}
-          onMove={this._setMove.bind(this, false)}
-          containerStyle={containerStyle}>
+          containerStyle={containerStyle}
+        >
           <ZoomControl
             zoomDiff={1}
-            onControlClick={this._onControlClick}/>
-          <Layer
-            type="circle"
-            paint={{
-              "circle-radius": 30,
-              "circle-color": cityColor.chicago,
-              "circle-blur": 1
-            }}>
-            <Feature
-              onClick={this._polygonClicked}
-              coordinates={circleCoords.chicago}/>
-          </Layer>
-          <Layer
-            type="symbol"
-            layout={{
-              "text-field": "28",
-              "text-font": [
-                  "DIN Offc Pro Medium",
-                  "Arial Unicode MS Bold"
-              ],
-              "text-size": 12
-            }}>
-            <Feature
-              onClick={this._polygonClicked}
-              coordinates={circleCoords.chicago}/>
-          </Layer>
-          <Layer
-            type="circle"
-            paint={{
-              "circle-radius": 30,
-              "circle-color": cityColor.aurora,
-              "circle-blur": 1
-            }}>
-            <Feature
-              onClick={this._polygonClicked}
-              coordinates={circleCoords.aurora}/>
-          </Layer>
-          <Layer
-            type="symbol"
-            layout={{
-              "text-field": "4",
-              "text-font": [
-                  "DIN Offc Pro Medium",
-                  "Arial Unicode MS Bold"
-              ],
-              "text-size": 12
-            }}>
-            <Feature
-              onClick={this._polygonClicked}
-              coordinates={circleCoords.aurora}/>
-          </Layer>
-          <Layer
-            type="circle"
-            paint={{
-              "circle-radius": 30,
-              "circle-color": cityColor.peoria,
-              "circle-blur": 1
-            }}>
-            <Feature
-              onClick={this._polygonClicked}
-              coordinates={circleCoords.peoria}/>
-          </Layer>
-          <Layer
-            type="symbol"
-            layout={{
-              "text-field": "3",
-              "text-font": [
-                  "DIN Offc Pro Medium",
-                  "Arial Unicode MS Bold"
-              ],
-              "text-size": 12
-            }}>
-            <Feature
-              onClick={this._polygonClicked}
-              coordinates={circleCoords.peoria}/>
-          </Layer>
-          <Layer
-            type="circle"
-            paint={{
-              "circle-radius": 30,
-              "circle-color": cityColor.urbana,
-              "circle-blur": 1
-            }}>
-            <Feature
-              onClick={this._polygonClicked}
-              coordinates={circleCoords.urbana}/>
-          </Layer>
-          <Layer
-            type="symbol"
-            layout={{
-              "text-field": "1",
-              "text-font": [
-                  "DIN Offc Pro Medium",
-                  "Arial Unicode MS Bold"
-              ],
-              "text-size": 12
-            }}>
-            <Feature
-              onClick={this._polygonClicked}
-              coordinates={circleCoords.urbana}/>
-          </Layer>
+            onControlClick={this._onControlClick}
+            position="bottomLeft"
+          />
+            <GeoJSONLayer
+              id="missing-children-json"
+              data="missing-children.geojson"
+              sourceOptions={{
+                cluster: true,
+                clusterMaxZoom: 10,
+                clusterRadius: 30,
+              }}
+            />
+            <Layer
+              type="circle"
+              sourceId="missing-children-json"
+              paint={{
+                'circle-color': colors.low_risk,
+                'circle-radius': 20,
+                'circle-blur': 0.7,
+              }}
+              layerOptions={{
+                filter: ['any',
+                  ['<', 'point_count', 10],
+                  ['!has', 'point_count'],
+                ],
+              }}
+            />
+            <Layer
+              type="circle"
+              sourceId="missing-children-json"
+              paint={{
+                'circle-color': colors.medium_risk,
+                'circle-radius': 25,
+                'circle-blur': 0.7,
+              }}
+              layerOptions={{
+                filter: ['all',
+                  ['>=', 'point_count', 10],
+                  ['<', 'point_count', 50],
+                ],
+              }}
+            />
+            <Layer
+              type="circle"
+              sourceId="missing-children-json"
+              paint={{
+                'circle-color': colors.high_risk,
+                'circle-radius': 30,
+                'circle-blur': 0.7,
+              }}
+              layerOptions={{
+                filter: ['>=', 'point_count', 50],
+              }}
+            />
+            <Layer
+              type="symbol"
+              sourceId="missing-children-json"
+              layout={{
+                'text-field': '1',
+                'text-font': [
+                  'DIN Offc Pro Medium',
+                  'Arial Unicode MS Bold',
+                ],
+                'text-size': 15,
+              }}
+              layerOptions={{
+                filter: ['!has', 'point_count'],
+              }}
+            />
+            <Layer
+              type="symbol"
+              sourceId="missing-children-json"
+              layout={{
+                'text-field': '{point_count}',
+                'text-font': [
+                  'DIN Offc Pro Medium',
+                  'Arial Unicode MS Bold',
+                ],
+                'text-size': 15,
+              }}
+              layerOptions={{
+                filter: ['has', 'point_count'],
+              }}
+            />
         </ReactMapboxGl>
-        <Menu style={styles.menu} icon='labeled' vertical>
-          <Menu.Item name='adults' active={activeItem === 'adults'} onClick={this.handleItemClick}>
-            <Icon name='male' />
+        <Rail style={styles.info} internal position="right">
+          <div>
+            <Label as="a" onClick={this._infoToggle}>
+              <Icon name="info" />   About this site
+            </Label>
+            <Label as="a" href="https://github.com/varmas/missing">
+              <Icon name="github" /> View on Github
+            </Label>
+          </div>
+        </Rail>
+        <Menu style={styles.menu} icon="labeled" vertical>
+          <Menu.Item name="adults"
+            active={this.state.activeItem === 'adults'} onClick={this._noFeatureToggle}
+          >
+            <Icon name="male" />
             Adults
           </Menu.Item>
-          <Menu.Item name='children' active={activeItem === 'children'} onClick={this.handleItemClick}>
-            <Icon name='child' />
+          <Menu.Item name="children"
+            active={this.state.activeItem === 'children'} onClick={this.handleItemClick}
+          >
+            <Icon name="child" />
             Children
           </Menu.Item>
-          <Menu.Item name='amber' active={activeItem === 'amber'} onClick={this.handleItemClick}>
-            <Icon name='fire' />
+          <Menu.Item name="amber"
+            active={this.state.activeItem === 'amber'} onClick={this._noFeatureToggle}
+          >
+            <Icon name="fire" />
             Amber Alerts
           </Menu.Item>
         </Menu>

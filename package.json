@@ -4,7 +4,8 @@
   "description": "a web application to track missing people",
   "main": "index.js",
   "scripts": {
-    "build": "webpack --optimize-minimize --progress",
+    "transpile-and-build": "webpack --optimize-minimize --progress",
+    "build": "npm run -s transpile-and-build",
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "npm run -s watch",
     "watch": "webpack-dev-server"
@@ -19,9 +20,7 @@
   "author": "varmas",
   "license": "GPL-3.0",
   "dependencies": {
-    "body-parser": "^1.14.1",
     "css-loader": "^0.23.1",
-    "immutable": "^3.8.1",
     "jquery": "~3.1.1",
     "lodash": "~4.16.6",
     "moment": "~2.15.2",
@@ -30,8 +29,7 @@
     "react-mapbox-gl": "^0.18.0",
     "rome": "~2.1.22",
     "semantic-ui-react": "^0.62.1",
-    "style-loader": "^0.13.1",
-    "xml2js": "^0.4.17"
+    "style-loader": "^0.13.1"
   },
   "devDependencies": {
     "babel": "~6.5.2",
@@ -43,6 +41,10 @@
     "babel-preset-stage-0": "^6.16.0",
     "babel-runtime": "~6.18.0",
     "css-loader": "~0.23.1",
+    "eslint": "3.12.0",
+    "eslint-config-airbnb-base": "7.1.0",
+    "eslint-plugin-import": "1.16.0",
+    "eslint-watch": "2.1.14",
     "parallelshell": "^2.0.0",
     "webpack": "~1.13.3",
     "webpack-dev-server": "~1.16.2"
