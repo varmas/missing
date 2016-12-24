@@ -6,7 +6,16 @@ A Web application to track missing people and visualize insights
 ```
 npm i
 npm start
-# visit localhost:3000
+# visit http://localhost:3000
+```
+
+# Build/Release
+
+```
+npm i
+npm run -s build
+# build files are index.html and index.js
+# the data file is missing-children.geojson which will be eliminated when http://github.com/varmas/missing-server finds a home to be hosted
 ```
 
 # resources
@@ -14,6 +23,10 @@ npm start
 `http://www.missingkids.com/`
 
 `http://www.namus.gov`
+
+`http://github.com/varmas/missing-server`
+
+`http://github.com/varmas/missing-aggregator`
 
 # walkthrough
 
